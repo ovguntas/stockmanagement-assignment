@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Product } from "../types/product";
+import {  ProductInput } from "../types/product";
 
 const instance = axios.create({
   baseURL: "http://localhost:3333",
@@ -8,7 +8,9 @@ const instance = axios.create({
     "Content-Type": "application/json",
   },
 });
-const responseBody = (response: AxiosResponse) => response.data;
+const responseBody = async (response: AxiosResponse) => {
+  return response.data;
+};
 const request = {
   get: (url: string) => instance.get(url).then(responseBody),
   post: (url: string, body: object) =>
@@ -25,7 +27,13 @@ const request = {
 };
 
 export const ApiRequest = {
-  getAllProducts: (url: string) => request.get(url).then(responseBody),
-  addProduct: (payload: { url: string; body: Product }) =>
-    request.post("/add", payload.body),
+  getAllProducts: async (url: string) => {
+    const response = await request.get(url);
+    if (!response) {
+      throw new Error("Veri alınamadı");
+    }
+    return response;
+  },
+  addProduct: (payload: { url: string; body: ProductInput }) =>
+    request.post("/add-product", payload.body),
 };

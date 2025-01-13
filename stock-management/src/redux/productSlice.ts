@@ -1,46 +1,90 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Product } from '../types/product';
-import { mockProducts } from '../mockdata/products';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Product } from "../types/product";
+import { ApiRequest } from "../api/ApiRequest";
 
+export const fetchProducts = createAsyncThunk<Product[], void>(
+  "products/fetchProducts",
+  async () => {
+    const response = await ApiRequest.getAllProducts("/products");
+    return response;
+  }
+);
 
 interface ProductState {
   products: Product[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
   searchTerm: string;
 }
 
 const initialState: ProductState = {
-  products: mockProducts,
-  searchTerm: '',
+  products: [],
+  status: "idle",
+  error: null,
+  searchTerm: "",
 };
 
 const productSlice = createSlice({
-  name: 'products',
+  name: "products",
   initialState,
   reducers: {
     addProduct: (state, action: PayloadAction<Product>) => {
       state.products.push(action.payload);
     },
     updateProduct: (state, action: PayloadAction<Product>) => {
-      const index = state.products.findIndex(p => p.id === action.payload.id);
+      const index = state.products.findIndex(
+        (p) => p._id === action.payload._id
+      );
       if (index !== -1) {
         state.products[index] = action.payload;
       }
     },
     removeProduct: (state, action: PayloadAction<string>) => {
-      state.products = state.products.filter(p => p.id !== action.payload);
+      state.products = state.products.filter((p) => p._id !== action.payload);
     },
-    useProduct: (state, action: PayloadAction<{ id: string; amount: number }>) => {
-      const product = state.products.find(p => p.id === action.payload.id);
+    useProduct: (
+      state,
+      action: PayloadAction<{ id: string; amount: number }>
+    ) => {
+      const product = state.products.find((p) => p._id === action.payload.id);
       if (product) {
-        product.quantity = Math.max(0, product.quantity - action.payload.amount);
+        product.quantity = Math.max(
+          0,
+          product.quantity - action.payload.amount
+        );
       }
     },
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
     },
+
+    // api call entegre edilmiş hali 
+    addProductToState: (state, action) => {
+      state.products.push(action.payload);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.products = action.payload;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Bir hata oluştu";
+      });
   },
 });
 
-export const { addProduct, updateProduct, removeProduct, useProduct, setSearchTerm } = productSlice.actions;
+export const {
+  addProduct,
+  updateProduct,
+  removeProduct,
+  useProduct,
+  setSearchTerm,
+  addProductToState
+} = productSlice.actions;
 export default productSlice.reducer;
-

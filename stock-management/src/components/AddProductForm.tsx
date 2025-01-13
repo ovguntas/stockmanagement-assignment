@@ -4,7 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { TextField, Button, Grid, MenuItem } from "@mui/material";
-import { addProduct } from "../redux/productSlice";
+import { addProductToState, fetchProducts } from "../redux/productSlice";
+import { ApiRequest } from "../api/ApiRequest";
+import { Product, ProductInput } from "../types/product";
+import { AppDispatch } from "../redux/store";
 
 const schema = z.object({
   name: z.string().min(1, "Ürün adı gereklidir"),
@@ -21,7 +24,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const AddProductForm: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { control, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -33,8 +36,26 @@ const AddProductForm: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    dispatch(addProduct({ id: Date.now().toString(), ...data }));
+  const onSubmit = async (data: ProductInput) => {
+    try {
+      const response = await ApiRequest.addProduct({
+        url: "/products",
+        body: data,
+      });
+      const product: Product = {
+        __v: response.__v,
+        _id: response._id,
+        name: response.name,
+        quantity: response.quantity,
+        unit: response.unit,
+        tag: response.tag,
+        imageUrl: response.imageUrl,
+      };
+      dispatch(addProductToState(product));
+      await dispatch(fetchProducts());
+    } catch (error) {
+      console.error("Ürün eklenirken hata oluştu:", error);
+    }
     reset();
   };
 

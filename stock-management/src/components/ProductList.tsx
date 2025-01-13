@@ -23,24 +23,29 @@ import { RootState } from "../redux/store";
 import { removeProduct } from "../redux/productSlice";
 import AddProductModal from "./AddProductModal";
 import StockUpdateModal from "./StockUpdateModal";
+import useHoveredImage from "../hooks/useHoveredImage";
 
 const ProductList: React.FC = () => {
   const dispatch = useDispatch();
   const { products, searchTerm } = useSelector(
     (state: RootState) => state.products
   );
-
+  const {
+    hoveredImage,
+    mousePosition,
+    handleMouseEnter,
+    handleMouseMove,
+    handleMouseLeave,
+  } = useHoveredImage();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const filteredProducts = products.filter((product) =>
+  const filteredProducts = products?.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const paginatedProducts = filteredProducts.slice(
+  const paginatedProducts = filteredProducts?.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -66,22 +71,6 @@ const ProductList: React.FC = () => {
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const handleMouseEnter = (
-    event: React.MouseEvent<HTMLElement>,
-    imageUrl: string
-  ) => {
-    setHoveredImage(imageUrl);
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLImageElement>) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredImage(null);
   };
 
   return (
@@ -111,18 +100,18 @@ const ProductList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedProducts.map((product) => (
-              <TableRow key={product.id}>
+            {paginatedProducts?.map((product) => (
+              <TableRow key={product._id}>
                 <TableCell component="th" scope="row">
                   <Avatar
                     alt="Product"
                     src={product.imageUrl}
                     onClick={() => handleOpenModal(product)}
-                    onMouseEnter={(event) =>
-                      handleMouseEnter(event, product.imageUrl || "")
+                    onMouseEnter={(e) =>
+                      handleMouseEnter(e, product.imageUrl || "")
                     }
-                    onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
+                    onMouseMove={handleMouseMove}
                     sx={{ cursor: "pointer" }}
                   />
                 </TableCell>
@@ -133,7 +122,7 @@ const ProductList: React.FC = () => {
                 <TableCell align="right">{product.unit}</TableCell>
                 <TableCell align="right">{product.tag}</TableCell>
                 <TableCell align="right">
-                  <Button onClick={() => handleRemove(product.id)}>
+                  <Button onClick={() => handleRemove(product._id)}>
                     <DeleteOutlineRoundedIcon />
                   </Button>
                   <Button onClick={() => handleOpenModal(product)}>
@@ -149,7 +138,7 @@ const ProductList: React.FC = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={filteredProducts.length}
+        count={filteredProducts?.length || 0}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

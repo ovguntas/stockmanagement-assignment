@@ -3,11 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-// Express app
 const app = express();
 const PORT = 3333;
-
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -17,7 +14,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
-// Mongoose Schema ve Model
+
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
@@ -32,18 +29,21 @@ const Product = mongoose.model("Product", productSchema);
 app.get("/products", async (req, res) => {
   try {
     const products = await Product.find();
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "Ürün bulunamadı" });
+    }
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-app.post("/products", async (req, res) => {
+app.post("/add-product", async (req, res) => {
   const product = new Product(req.body);
   try {
     const savedProduct = await product.save();
-    const allProducts=await Product.find();
-    res.status(201).json(allProducts);
+    
+    res.status(201).json(savedProduct);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -67,7 +67,6 @@ app.delete("/products/:id", async (req, res) => {
   }
 });
 
-// Sunucuyu Başlat
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

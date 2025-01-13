@@ -50,7 +50,7 @@ const UseProductForm: React.FC = () => {
                 helperText={error?.message}
               >
                 {products.map((product) => (
-                  <MenuItem key={product.id} value={product.id}>
+                  <MenuItem key={product._id} value={product._id}>
                     {product.name} ({product.tag})
                   </MenuItem>
                 ))}
