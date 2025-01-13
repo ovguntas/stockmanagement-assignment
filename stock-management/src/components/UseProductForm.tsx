@@ -21,7 +21,9 @@ interface UseProductFormProps {
 const UseProductForm: React.FC<UseProductFormProps> = ({ onSuccess }) => {
   const [tabValue, setTabValue] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
-  const products = useSelector((state: RootState) => state.products.products);
+  const products = useSelector((state: RootState) => 
+    state.products.products.filter(product => product.isEnabled)
+  );
 
   const { control, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),

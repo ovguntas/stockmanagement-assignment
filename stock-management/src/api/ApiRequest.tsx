@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import {  ProductInput } from "../types/product";
+import { ProductInput, ProductsResponse } from "../types/product";
 
 const instance = axios.create({
   baseURL: "http://localhost:3333",
@@ -8,9 +8,11 @@ const instance = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 const responseBody = async (response: AxiosResponse) => {
   return response.data;
 };
+
 const request = {
   get: (url: string) => instance.get(url).then(responseBody),
   post: (url: string, body: object) =>
@@ -30,12 +32,14 @@ const request = {
 };
 
 export const ApiRequest = {
-  getAllProducts: async (url: string) => {
-    const response = await request.get(url);
+  getAllProducts: async (page: number = 1, limit: number = 10, search: string = "") => {
+    const response = await request.get(
+      `/products?page=${page}&limit=${limit}&search=${search}`
+    );
     if (!response) {
       throw new Error("Veri alınamadı");
     }
-    return response;
+    return response as ProductsResponse;
   },
   addProduct: (payload: { url: string; body: ProductInput }) =>
     request.post("/add-product", payload.body),
@@ -44,4 +48,8 @@ export const ApiRequest = {
   deleteProduct: (id: string) =>
     request.delete(`/products/${id}`),
   getStockLogs: () => request.get("/stock-logs"),
+  toggleProductStatus: (id: string) =>
+    request.put(`/products/${id}/toggle-status`, {}),
+  updatePublishStatus: (id: string, status: 'published' | 'draft') =>
+    request.put(`/products/${id}/publish-status`, { status }),
 };

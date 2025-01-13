@@ -2,21 +2,24 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Product, ProductInput } from "../types/product";
 import { ApiRequest } from "../api/ApiRequest";
 
-export const fetchProducts = createAsyncThunk<Product[], void>(
-  "products/fetchProducts",
-  async () => {
-    const response = await ApiRequest.getAllProducts("/products");
-    return response;
+export const fetchProducts = createAsyncThunk(
+  'products/fetchProducts',
+  async ({ page = 1, search = '', limit = 10 }: { page?: number; search?: string; limit?: number }) => {
+    const response = await ApiRequest.getAllProducts(page, limit, search);
+    return {
+      products: response.products,
+      total: response.total
+    };
   }
 );
 
-export const updateProductAsync = createAsyncThunk<Product, { id: string; product: ProductInput }>(
-  "products/updateProduct",
-  async ({ id, product }) => {
-    const response = await ApiRequest.updateProduct(id, product);
-    return response;
-  }
-);
+export const updateProductAsync = createAsyncThunk<
+  Product,
+  { id: string; product: Partial<Product> }
+>("products/updateProduct", async ({ id, product }) => {
+  const response = await ApiRequest.updateProduct(id, product as ProductInput);
+  return response;
+});
 
 export const deleteProductAsync = createAsyncThunk<string, string>(
   "products/deleteProduct",
@@ -31,6 +34,9 @@ interface ProductState {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   searchTerm: string;
+  currentPage: number;
+  totalPages: number;
+  total: number;
 }
 
 const initialState: ProductState = {
@@ -38,45 +44,18 @@ const initialState: ProductState = {
   status: "idle",
   error: null,
   searchTerm: "",
+  currentPage: 1,
+  totalPages: 1,
+  total: 0,
 };
 
 const productSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    addProduct: (state, action: PayloadAction<Product>) => {
-      state.products.push(action.payload);
-    },
-    updateProduct: (state, action: PayloadAction<Product>) => {
-      const index = state.products.findIndex(
-        (p) => p._id === action.payload._id
-      );
-      if (index !== -1) {
-        state.products[index] = action.payload;
-      }
-    },
-    removeProduct: (state, action: PayloadAction<string>) => {
-      state.products = state.products.filter((p) => p._id !== action.payload);
-    },
-    useProduct: (
-      state,
-      action: PayloadAction<{ id: string; amount: number }>
-    ) => {
-      const product = state.products.find((p) => p._id === action.payload.id);
-      if (product) {
-        product.quantity = Math.max(
-          0,
-          product.quantity - action.payload.amount
-        );
-      }
-    },
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
-    },
-
-    // api call entegre edilmiş hali 
-    addProductToState: (state, action) => {
-      state.products.push(action.payload);
+      state.currentPage = 1; // Reset page when searching
     },
   },
   extraReducers: (builder) => {
@@ -86,7 +65,8 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.products = action.payload;
+        state.products = action.payload.products;
+        state.total = action.payload.total;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = "failed";
@@ -104,12 +84,5 @@ const productSlice = createSlice({
   },
 });
 
-export const {
-  addProduct,
-  updateProduct,
-  removeProduct,
-  useProduct,
-  setSearchTerm,
-  addProductToState
-} = productSlice.actions;
+export const { setSearchTerm } = productSlice.actions;
 export default productSlice.reducer;

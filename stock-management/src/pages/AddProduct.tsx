@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Typography, Paper } from '@mui/material';
 import UseProductForm from '../components/UseProductForm';
 import { useNavigate } from 'react-router-dom';

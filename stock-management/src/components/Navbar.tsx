@@ -1,164 +1,226 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
+  Box,
   Toolbar,
   Typography,
-  InputBase,
   IconButton,
-  Drawer,
+  Badge,
+  Modal,
   List,
+  ListItem,
   ListItemText,
-  useMediaQuery,
-  useTheme,
-  ListItemButton,
+  ListItemSecondaryAction,
   Button,
-} from "@mui/material";
-import { 
-  Menu as MenuIcon, 
-  Search as SearchIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
-  Add as AddIcon
-} from "@mui/icons-material";
-import { styled, alpha } from "@mui/material/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { setSearchTerm } from "../redux/productSlice";
-import { useTheme as useCustomTheme } from '../context/ThemeContext';
-import { useNavigate } from 'react-router-dom';
+  ButtonGroup,
+  Divider,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useTheme as useAppTheme } from '../context/ThemeContext';
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
-    width: "auto",
-  },
-}));
 
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
-  },
-}));
+interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  cartQuantity: number;
+  unit: string;
+}
 
 interface NavbarProps {
-  onMenuClick?: () => void;
+  onMenuClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
-  const { toggleTheme, isDarkMode } = useCustomTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { mode, toggleTheme } = useAppTheme();
+  const isDarkMode = mode === 'dark';
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchTerm(event.target.value));
-  };
+  const isMarketPage = location.pathname === '/market';
 
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
+
+    const handleCartUpdate = () => {
+      const updatedCart = localStorage.getItem('cart');
+      if (updatedCart) {
+        setCartItems(JSON.parse(updatedCart));
       }
-      setIsDrawerOpen(open);
     };
 
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, []);
+
+  const handleCartOpen = () => setCartOpen(true);
+  const handleCartClose = () => setCartOpen(false);
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0);
+  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.cartQuantity), 0);
+
+  const handleUpdateQuantity = (itemId: string, change: number) => {
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.map(item => {
+        if (item._id === itemId) {
+          const newQuantity = item.cartQuantity + change;
+          return newQuantity > 0 ? { ...item, cartQuantity: newQuantity } : null;
+        }
+        return item;
+      }).filter((item): item is CartItem => item !== null);
+
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      return updatedItems;
+    });
+  };
+
+  const handleRemoveItem = (itemId: string) => {
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.filter(item => item._id !== itemId);
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      return updatedItems;
+    });
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          sx={{ mr: 2 }}
-          onClick={toggleDrawer(true)}
-        >
-          <MenuIcon />
-        </IconButton>
+        {isMobile && !isMarketPage && (
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={onMenuClick}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography
           variant="h6"
-          noWrap
-          component="div"
-          sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+          component={Link}
+          to="/"
+          sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
         >
           Stok Yönetimi
         </Typography>
-        <Button
-          color="inherit"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/add-product')}
-          sx={{ mr: 2 }}
-        >
-          Stok Ekle
-        </Button>
-        <Button
-          color="inherit"
-          onClick={() => navigate('/stock-logs')}
-          sx={{ mr: 2 }}
-        >
-          Hareket Kayıtları
-        </Button>
-        <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
-          {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
-        </IconButton>
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Ara..."
-            inputProps={{ "aria-label": "search" }}
-            onChange={handleSearchChange}
-          />
-        </Search>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <IconButton color="inherit" onClick={() => navigate('/market')}>
+            <Typography variant="button" sx={{ mr: 1 }}>
+              Market
+            </Typography>
+          </IconButton>
+          {isMarketPage && (
+            <IconButton color="inherit" onClick={handleCartOpen}>
+              <Badge badgeContent={totalItems} color="error">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+          )}
+          <IconButton color="inherit" onClick={toggleTheme}>
+            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+        </Box>
       </Toolbar>
-      <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer(false)}>
-        <List sx={{ width: 250 }} onClick={toggleDrawer(false)}>
-          <ListItemButton onClick={() => navigate('/')}>
-            <ListItemText primary="Ana Sayfa" />
-          </ListItemButton>
-          <ListItemButton onClick={() => navigate('/add-product')}>
-            <ListItemText primary="Stok İşlemleri" />
-          </ListItemButton>
-          <ListItemButton onClick={() => navigate('/stock-logs')}>
-            <ListItemText primary="Hareket Kayıtları" />
-          </ListItemButton>
-        </List>
-      </Drawer>
+
+      <Modal
+        open={cartOpen}
+        onClose={handleCartClose}
+        aria-labelledby="cart-modal"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2,
+          maxHeight: '80vh',
+          overflow: 'auto'
+        }}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            Sepetim
+          </Typography>
+          {cartItems.length === 0 ? (
+            <Typography color="text.secondary">
+              Sepetiniz boş
+            </Typography>
+          ) : (
+            <>
+              <List>
+                {cartItems.map((item) => (
+                  <React.Fragment key={item._id}>
+                    <ListItem>
+                      <ListItemText
+                        primary={item.name}
+                        secondary={`Birim Fiyat: $${item.price}`}
+                      />
+                      <ListItemSecondaryAction>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <ButtonGroup size="small">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleUpdateQuantity(item._id, -1)}
+                            >
+                              <RemoveIcon fontSize="small" />
+                            </IconButton>
+                            <Typography sx={{ mx: 1 }}>
+                              {item.cartQuantity}
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleUpdateQuantity(item._id, 1)}
+                            >
+                              <AddIcon fontSize="small" />
+                            </IconButton>
+                          </ButtonGroup>
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => handleRemoveItem(item._id)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <Typography variant="body2" color="text.secondary" sx={{ pl: 2 }}>
+                      Toplam: ${(item.price * item.cartQuantity).toFixed(2)}
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
+                  </React.Fragment>
+                ))}
+              </List>
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6">
+                  Toplam: ${totalPrice.toFixed(2)}
+                </Typography>
+                <Button variant="contained" color="primary">
+                  Siparişi Tamamla
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
     </AppBar>
   );
 };
