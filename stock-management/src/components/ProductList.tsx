@@ -75,6 +75,7 @@ const ProductList: React.FC = () => {
   }, [dispatch, page, searchTerm, rowsPerPage]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(0);
     dispatch(setSearchTerm(event.target.value));
   };
 
