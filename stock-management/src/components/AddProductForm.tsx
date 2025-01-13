@@ -3,10 +3,11 @@ import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { TextField, Button, Grid, MenuItem } from "@mui/material";
+import { TextField, Button, MenuItem } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { fetchProducts } from "../redux/productSlice";
 import { ApiRequest } from "../api/ApiRequest";
-import {  ProductInput } from "../types/product";
+import { ProductInput } from "../types/product";
 import { AppDispatch } from "../redux/store";
 import { useNavigate } from "react-router-dom";
 
@@ -47,7 +48,7 @@ const AddProductForm: React.FC = () => {
         body: data,
       });
       await dispatch(fetchProducts({ page: 1, search: "" }));
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Ürün eklenirken hata oluştu:", error);
     }
@@ -57,7 +58,12 @@ const AddProductForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="name"
             control={control}
@@ -72,7 +78,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="quantity"
             control={control}
@@ -89,7 +100,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="price"
             control={control}
@@ -106,7 +122,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="unit"
             control={control}
@@ -121,7 +142,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="tag"
             control={control}
@@ -141,7 +167,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Controller
             name="imageUrl"
             control={control}
@@ -156,7 +187,12 @@ const AddProductForm: React.FC = () => {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Button type="submit" variant="contained" color="primary">
             Ürün Ekle
           </Button>

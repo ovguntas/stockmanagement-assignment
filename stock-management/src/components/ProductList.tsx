@@ -22,10 +22,10 @@ import {
   InputAdornment,
   Button,
   Modal,
-  Grid,
   ButtonGroup,
   IconButton as MuiIconButton,
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
@@ -401,8 +401,11 @@ const ProductList: React.FC = () => {
               <Grid container spacing={2}>
                 {selectedProductForDetail.imageUrl && (
                   <Grid
-                    item
-                    xs={12}
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4,
+                    }}
                     sx={{ display: "flex", justifyContent: "center", mb: 2 }}
                   >
                     <Box
@@ -420,7 +423,12 @@ const ProductList: React.FC = () => {
                     />
                   </Grid>
                 )}
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <Typography variant="subtitle2" color="text.secondary">
                     Ürün Adı
                   </Typography>
@@ -428,7 +436,12 @@ const ProductList: React.FC = () => {
                     {selectedProductForDetail.name}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <Typography variant="subtitle2" color="text.secondary">
                     Kategori
                   </Typography>
@@ -436,7 +449,12 @@ const ProductList: React.FC = () => {
                     {selectedProductForDetail.tag}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <Typography variant="subtitle2" color="text.secondary">
                     Stok Miktarı
                   </Typography>
@@ -467,7 +485,12 @@ const ProductList: React.FC = () => {
                     </ButtonGroup>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <Typography variant="subtitle2" color="text.secondary">
                     Fiyat
                   </Typography>
@@ -475,7 +498,12 @@ const ProductList: React.FC = () => {
                     ${selectedProductForDetail.price}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <Box sx={{ display: 'flex',flexDirection: 'column', alignItems: 'start', gap: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Durum

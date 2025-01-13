@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Container,
-  Grid,
   Card,
   CardMedia,
   CardContent,
@@ -20,7 +19,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { RootState, AppDispatch } from '../redux/store';
 import { fetchProducts, setSearchTerm } from '../redux/productSlice';
 import { Product } from '../types/product';
-
+import Grid from '@mui/material/Grid2';
 interface CartItem extends Product {
   cartQuantity: number;
 }
@@ -103,7 +102,15 @@ const Market: React.FC = () => {
 
       <Grid container spacing={3}>
         {publishedProducts.map((product) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+              lg: 3,
+            }}
+            key={product._id}
+          >
             <Card>
               {product.imageUrl && (
                 <CardMedia
