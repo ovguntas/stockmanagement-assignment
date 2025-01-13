@@ -288,7 +288,7 @@ const ProductList: React.FC = () => {
                     onChange={() => handleToggleStatus(selectedProduct)}
                   />
                 }
-                label={selectedProduct.isEnabled ? "Aktif" : "Pasif"}
+                label={selectedProduct.isEnabled ? "Pasifleştir" : "Aktifleştir"}
               />
             </MenuItem>
             <MenuItem
@@ -458,19 +458,51 @@ const ProductList: React.FC = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Durum
-                  </Typography>
-                  <Chip
-                    label={
-                      selectedProductForDetail.isEnabled ? "Yayında" : "Taslak"
-                    }
-                    color={
-                      selectedProductForDetail.isEnabled ? "success" : "default"
-                    }
-                    size="small"
-                    sx={{ mt: 1 }}
-                  />
+                  <Box sx={{ display: 'flex',flexDirection: 'column', alignItems: 'start', gap: 2 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Durum
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <Chip
+                        label={selectedProductForDetail.isEnabled ? "Yayında" : "Taslak"}
+                        color={selectedProductForDetail.isEnabled ? "success" : "default"}
+                        size="small"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            size="small"
+                            checked={selectedProductForDetail.isEnabled}
+                            onChange={async () => {
+                              try {
+                                const response = await ApiRequest.toggleProductStatus(selectedProductForDetail._id);
+                                dispatch(
+                                  updateProductAsync({
+                                    id: selectedProductForDetail._id,
+                                    product: {
+                                      ...selectedProductForDetail,
+                                      isEnabled: response.isEnabled,
+                                      status: response.isEnabled ? "published" : "draft",
+                                    },
+                                  })
+                                );
+                                setSelectedProductForDetail({
+                                  ...selectedProductForDetail,
+                                  isEnabled: response.isEnabled,
+                                  status: response.isEnabled ? "published" : "draft",
+                                });
+                                showSuccess(`Ürün durumu ${response.isEnabled ? "aktif" : "pasif"} olarak güncellendi`);
+                              } catch (error) {
+                                showError("Ürün durumu güncellenirken bir hata oluştu");
+                                console.error("Error toggling status:", error);
+                              }
+                            }}
+                          />
+                        }
+                        label={selectedProductForDetail.isEnabled ? "Pasifleştir" : "Aktifleştir"}
+                      />
+                    </Box>
+                  </Box>
                 </Grid>
               </Grid>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>

@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { Container, Paper, Typography, TextField, Button, Box } from '@mui/material';
-import { AppDispatch } from '../redux/store';
-import { updateProductAsync } from '../redux/productSlice';
-import { Product } from '../types/product';
-import { ApiRequest } from '../api/ApiRequest';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from "@mui/material";
+import { AppDispatch } from "../redux/store";
+import { updateProductAsync } from "../redux/productSlice";
+import { Product } from "../types/product";
+import { ApiRequest } from "../api/ApiRequest";
 import { useNotification } from "../hooks/useNotification";
 
 const StockUpdate = () => {
@@ -20,13 +27,13 @@ const StockUpdate = () => {
     const fetchProduct = async () => {
       try {
         const response = await ApiRequest.getAllProducts();
-        const foundProduct = response.products.find(p => p._id === id);
+        const foundProduct = response.products.find((p) => p._id === id);
         if (foundProduct) {
           setProduct(foundProduct);
           setQuantity(foundProduct.quantity);
         }
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error("Error fetching product:", error);
       }
     };
 
@@ -68,26 +75,53 @@ const StockUpdate = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Paper sx={{ p: 4 }}>
-        <Typography variant="h5" component="h1" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom>
           Stok Güncelle
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="h5" my={2} textAlign={"center"} gutterBottom>
           {product.name}
         </Typography>
+        {product.imageUrl && (
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              mb: 3,
+            }}
+          >
+            <Box
+              component="img"
+              src={product.imageUrl}
+              alt={product.name}
+              sx={{
+                width: "100%",
+                maxWidth: 200,
+                height: "auto",
+                maxHeight: 200,
+                objectFit: "contain",
+                borderRadius: 1,
+              }}
+            />
+          </Box>
+        )}
+
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Stok Miktarı"
+            label="Yeni Stok Miktarı"
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
             margin="normal"
             InputProps={{
-              endAdornment: <Typography>{product.unit}</Typography>
+              endAdornment: <Typography>{product.unit}</Typography>,
             }}
           />
-          <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button onClick={() => navigate('/')} color="inherit">
+          <Box
+            sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
+          >
+            <Button onClick={() => navigate("/")} color="inherit">
               İptal
             </Button>
             <Button type="submit" variant="contained" color="primary">
@@ -100,4 +134,4 @@ const StockUpdate = () => {
   );
 };
 
-export default StockUpdate; 
+export default StockUpdate;
