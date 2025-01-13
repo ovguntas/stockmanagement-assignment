@@ -30,6 +30,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Product } from "../types/product";
 import { RootState, AppDispatch } from "../redux/store";
 import {
@@ -377,9 +378,26 @@ const ProductList: React.FC = () => {
         >
           {selectedProductForDetail && (
             <>
-              <Typography variant="h5" component="h2" gutterBottom>
-                Ürün Detayları
-              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography variant="h5" component="h2">
+                  Ürün Detayları
+                </Typography>
+                <IconButton
+                  color="error"
+                  onClick={async () => {
+                    try {
+                      await dispatch(deleteProductAsync(selectedProductForDetail._id));
+                      showSuccess("Ürün başarıyla silindi");
+                      handleCloseDetailModal();
+                    } catch (error) {
+                      showError("Ürün silinirken bir hata oluştu");
+                      console.error("Error deleting product:", error);
+                    }
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
               <Grid container spacing={2}>
                 {selectedProductForDetail.imageUrl && (
                   <Grid
