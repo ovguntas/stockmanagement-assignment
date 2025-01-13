@@ -55,7 +55,7 @@ const productSlice = createSlice({
   reducers: {
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
-      state.currentPage = 1; // Reset page when searching
+      state.currentPage = 1;
     },
   },
   extraReducers: (builder) => {
