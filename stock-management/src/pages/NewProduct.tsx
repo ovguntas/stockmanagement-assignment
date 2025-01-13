@@ -9,7 +9,7 @@ const NewProduct = () => {
       <Helmet>
         <title>Yeni Ürün Ekle | Stok Yönetimi</title>
       </Helmet>
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Yeni Ürün Ekle

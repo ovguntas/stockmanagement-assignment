@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       open={isMobile ? open : true}
       onClose={onClose}
       ModalProps={{
-        keepMounted: true, // Better mobile performance
+        keepMounted: true,
       }}
       sx={{
         width: drawerWidth,

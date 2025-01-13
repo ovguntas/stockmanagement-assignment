@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { mode, toggleTheme } = useAppTheme();
   const isDarkMode = mode === 'dark';
   const [cartOpen, setCartOpen] = useState(false);

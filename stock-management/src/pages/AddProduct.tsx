@@ -11,7 +11,7 @@ const AddProduct = () => {
       <Helmet>
         <title>Stok İşlemleri | Stok Yönetimi</title>
       </Helmet>
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Stok İşlemleri

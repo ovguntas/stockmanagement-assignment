@@ -23,7 +23,7 @@ const UseProductForm: React.FC<UseProductFormProps> = ({ onSuccess }) => {
   const [tabValue, setTabValue] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const products = useSelector((state: RootState) =>
-    state.products.products.filter((product) => product.isEnabled)
+    state.products.products
   );
 
   const { control, handleSubmit, reset } = useForm<FormData>({
@@ -92,8 +92,7 @@ const UseProductForm: React.FC<UseProductFormProps> = ({ onSuccess }) => {
                 >
                   {products.map((product) => (
                     <MenuItem key={product._id} value={product._id}>
-                      {product.name} ({product.tag}) - Mevcut Stok:{" "}
-                      {product.quantity}
+                      {product.name} ({product.tag}) - Mevcut Stok: {product.quantity} {product.unit} - {product.isEnabled ? "Aktif" : "Pasif"}
                     </MenuItem>
                   ))}
                 </TextField>

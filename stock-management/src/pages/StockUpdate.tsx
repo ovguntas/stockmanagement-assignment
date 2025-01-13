@@ -8,13 +8,14 @@ import {
   TextField,
   Button,
   Box,
+  InputAdornment,
 } from "@mui/material";
 import { AppDispatch } from "../redux/store";
 import { updateProductAsync } from "../redux/productSlice";
 import { Product } from "../types/product";
 import { ApiRequest } from "../api/ApiRequest";
 import { useNotification } from "../hooks/useNotification";
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
 const StockUpdate = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,7 +72,7 @@ const StockUpdate = () => {
         <Helmet>
           <title>Stok Güncelle | Stok Yönetimi</title>
         </Helmet>
-        <Container maxWidth="sm">
+        <Container maxWidth="lg">
           <Typography>Ürün yükleniyor...</Typography>
         </Container>
       </>
@@ -83,7 +84,7 @@ const StockUpdate = () => {
       <Helmet>
         <title>{`${product.name} - Stok Güncelle | Stok Yönetimi`}</title>
       </Helmet>
-      <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Stok Güncelle
@@ -124,12 +125,23 @@ const StockUpdate = () => {
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
               margin="normal"
-              InputProps={{
-                endAdornment: <Typography>{product.unit}</Typography>,
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      {product.unit}
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
             <Box
-              sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
+              sx={{
+                mt: 3,
+                display: "flex",
+                gap: 2,
+                justifyContent: "flex-end",
+              }}
             >
               <Button onClick={() => navigate("/")} color="inherit">
                 İptal
