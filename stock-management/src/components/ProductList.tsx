@@ -138,6 +138,7 @@ const ProductList: React.FC = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
+        labelRowsPerPage="Sayfa başı ürün sayısı"
         count={filteredProducts?.length || 0}
         rowsPerPage={rowsPerPage}
         page={page}

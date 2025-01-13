@@ -12,11 +12,17 @@ import {
   useTheme,
   ListItemButton,
 } from "@mui/material";
-import { Menu as MenuIcon, Search as SearchIcon } from "@mui/icons-material";
+import { 
+  Menu as MenuIcon, 
+  Search as SearchIcon,
+  Brightness4 as DarkModeIcon,
+  Brightness7 as LightModeIcon
+} from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setSearchTerm } from "../redux/productSlice";
+import { useTheme as useCustomTheme } from '../context/ThemeContext';
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,7 +65,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  onMenuClick: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({onMenuClick}) => {
   const dispatch = useDispatch();
   const searchTerm = useSelector(
     (state: RootState) => state.products.searchTerm
@@ -67,6 +77,7 @@ const Navbar: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { mode, toggleTheme } = useCustomTheme();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchTerm(event.target.value));
@@ -104,7 +115,7 @@ const Navbar: React.FC = () => {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-            onClick={toggleDrawer(true)}
+            onClick={onMenuClick}
           >
             <MenuIcon />
           </IconButton>
@@ -141,6 +152,9 @@ const Navbar: React.FC = () => {
             onChange={handleSearchChange}
           />
         </Search>
+        <IconButton color="inherit" onClick={toggleTheme} sx={{ ml: 1 }}>
+          {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+        </IconButton>
       </Toolbar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         {drawerContent}
@@ -150,3 +164,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
