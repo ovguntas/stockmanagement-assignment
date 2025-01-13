@@ -32,7 +32,7 @@ const StockUpdateModal = () => {
           <Typography variant="h5" mb={4} component="h2" gutterBottom>
             Stok Güncelle
           </Typography>
-          <UseProductForm />
+          <UseProductForm onSuccess={handleCloseStockUpdateModal} />
         </Box>
       </Modal>
     </div>

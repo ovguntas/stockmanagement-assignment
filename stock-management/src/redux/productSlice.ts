@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "../types/product";
+import { Product, ProductInput } from "../types/product";
 import { ApiRequest } from "../api/ApiRequest";
 
 export const fetchProducts = createAsyncThunk<Product[], void>(
@@ -7,6 +7,22 @@ export const fetchProducts = createAsyncThunk<Product[], void>(
   async () => {
     const response = await ApiRequest.getAllProducts("/products");
     return response;
+  }
+);
+
+export const updateProductAsync = createAsyncThunk<Product, { id: string; product: ProductInput }>(
+  "products/updateProduct",
+  async ({ id, product }) => {
+    const response = await ApiRequest.updateProduct(id, product);
+    return response;
+  }
+);
+
+export const deleteProductAsync = createAsyncThunk<string, string>(
+  "products/deleteProduct",
+  async (id) => {
+    await ApiRequest.deleteProduct(id);
+    return id;
   }
 );
 
@@ -74,7 +90,16 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Bir hata oluştu";
+        state.error = action.error.message || null;
+      })
+      .addCase(updateProductAsync.fulfilled, (state, action) => {
+        const index = state.products.findIndex(p => p._id === action.payload._id);
+        if (index !== -1) {
+          state.products[index] = action.payload;
+        }
+      })
+      .addCase(deleteProductAsync.fulfilled, (state, action) => {
+        state.products = state.products.filter(p => p._id !== action.payload);
       });
   },
 });

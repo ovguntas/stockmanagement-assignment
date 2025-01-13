@@ -19,14 +19,14 @@ import {
 import PreviewRoundedIcon from "@mui/icons-material/PreviewRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { Product } from "../types/product";
-import { RootState } from "../redux/store";
-import { removeProduct } from "../redux/productSlice";
+import { RootState, AppDispatch } from "../redux/store";
+import { deleteProductAsync } from "../redux/productSlice";
 import AddProductModal from "./AddProductModal";
 import StockUpdateModal from "./StockUpdateModal";
 import useHoveredImage from "../hooks/useHoveredImage";
 
 const ProductList: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { products, searchTerm } = useSelector(
     (state: RootState) => state.products
   );
@@ -50,8 +50,12 @@ const ProductList: React.FC = () => {
     page * rowsPerPage + rowsPerPage
   );
 
-  const handleRemove = (id: string) => {
-    dispatch(removeProduct(id));
+  const handleRemove = async (id: string) => {
+    try {
+      await dispatch(deleteProductAsync(id)).unwrap();
+    } catch (error) {
+      console.error("Ürün silinirken bir hata oluştu:", error);
+    }
   };
 
   const handleOpenModal = (product: Product) => {

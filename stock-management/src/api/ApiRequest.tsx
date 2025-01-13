@@ -15,6 +15,9 @@ const request = {
   get: (url: string) => instance.get(url).then(responseBody),
   post: (url: string, body: object) =>
     instance.post(url, body).then(responseBody),
+  put: (url: string, body: object) =>
+    instance.put(url, body).then(responseBody),
+  delete: (url: string) => instance.delete(url).then(responseBody),
   postFormData: async (url: string, body: any) => {
     return instance
       .post(url, body, {
@@ -36,4 +39,9 @@ export const ApiRequest = {
   },
   addProduct: (payload: { url: string; body: ProductInput }) =>
     request.post("/add-product", payload.body),
+  updateProduct: (id: string, body: ProductInput) =>
+    request.put(`/products/${id}`, body),
+  deleteProduct: (id: string) =>
+    request.delete(`/products/${id}`),
+  getStockLogs: () => request.get("/stock-logs"),
 };
