@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from '../redux/store';
 import { fetchStockLogs } from '../redux/stockLogSlice';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { Helmet } from 'react-helmet-async';
 
 const StockLogs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,41 +22,46 @@ const StockLogs = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Stok Hareket Kayıtları
-        </Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Ürün Adı</TableCell>
-                <TableCell align="right">Önceki Stok</TableCell>
-                <TableCell align="right">Yeni Stok</TableCell>
-                <TableCell align="right">İşlem Tipi</TableCell>
-                <TableCell align="right">Tarih</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {logs.map((log) => (
-                <TableRow key={log._id}>
-                  <TableCell component="th" scope="row">
-                    {log.productName}
-                  </TableCell>
-                  <TableCell align="right">{log.previousQuantity}</TableCell>
-                  <TableCell align="right">{log.newQuantity}</TableCell>
-                  <TableCell align="right">
-                    {log.operationType === 'decrease' ? 'Stok Azaltma' : 'Stok Güncelleme'}
-                  </TableCell>
-                  <TableCell align="right">{formatDate(log.timestamp)}</TableCell>
+    <>
+      <Helmet>
+        <title>Stok Hareketleri | Stok Yönetimi</title>
+      </Helmet>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Stok Hareket Kayıtları
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Ürün Adı</TableCell>
+                  <TableCell align="right">Önceki Stok</TableCell>
+                  <TableCell align="right">Yeni Stok</TableCell>
+                  <TableCell align="right">İşlem Tipi</TableCell>
+                  <TableCell align="right">Tarih</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </Container>
+              </TableHead>
+              <TableBody>
+                {logs.map((log) => (
+                  <TableRow key={log._id}>
+                    <TableCell component="th" scope="row">
+                      {log.productName}
+                    </TableCell>
+                    <TableCell align="right">{log.previousQuantity}</TableCell>
+                    <TableCell align="right">{log.newQuantity}</TableCell>
+                    <TableCell align="right">
+                      {log.operationType === 'decrease' ? 'Stok Azaltma' : 'Stok Güncelleme'}
+                    </TableCell>
+                    <TableCell align="right">{formatDate(log.timestamp)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Container>
+    </>
   );
 };
 

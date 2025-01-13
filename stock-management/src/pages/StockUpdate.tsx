@@ -14,6 +14,7 @@ import { updateProductAsync } from "../redux/productSlice";
 import { Product } from "../types/product";
 import { ApiRequest } from "../api/ApiRequest";
 import { useNotification } from "../hooks/useNotification";
+import { Helmet } from 'react-helmet-async';
 
 const StockUpdate = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,71 +67,81 @@ const StockUpdate = () => {
 
   if (!product) {
     return (
-      <Container maxWidth="sm">
-        <Typography>Ürün yükleniyor...</Typography>
-      </Container>
+      <>
+        <Helmet>
+          <title>Stok Güncelle | Stok Yönetimi</title>
+        </Helmet>
+        <Container maxWidth="sm">
+          <Typography>Ürün yükleniyor...</Typography>
+        </Container>
+      </>
     );
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Stok Güncelle
-        </Typography>
-        <Typography variant="h5" my={2} textAlign={"center"} gutterBottom>
-          {product.name}
-        </Typography>
-        {product.imageUrl && (
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              mb: 3,
-            }}
-          >
+    <>
+      <Helmet>
+        <title>{`${product.name} - Stok Güncelle | Stok Yönetimi`}</title>
+      </Helmet>
+      <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Stok Güncelle
+          </Typography>
+          <Typography variant="h5" my={2} textAlign={"center"} gutterBottom>
+            {product.name}
+          </Typography>
+          {product.imageUrl && (
             <Box
-              component="img"
-              src={product.imageUrl}
-              alt={product.name}
               sx={{
                 width: "100%",
-                maxWidth: 200,
-                height: "auto",
-                maxHeight: 200,
-                objectFit: "contain",
-                borderRadius: 1,
+                display: "flex",
+                justifyContent: "center",
+                mb: 3,
+              }}
+            >
+              <Box
+                component="img"
+                src={product.imageUrl}
+                alt={product.name}
+                sx={{
+                  width: "100%",
+                  maxWidth: 200,
+                  height: "auto",
+                  maxHeight: 200,
+                  objectFit: "contain",
+                  borderRadius: 1,
+                }}
+              />
+            </Box>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Yeni Stok Miktarı"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              margin="normal"
+              InputProps={{
+                endAdornment: <Typography>{product.unit}</Typography>,
               }}
             />
-          </Box>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="Yeni Stok Miktarı"
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            margin="normal"
-            InputProps={{
-              endAdornment: <Typography>{product.unit}</Typography>,
-            }}
-          />
-          <Box
-            sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
-          >
-            <Button onClick={() => navigate("/")} color="inherit">
-              İptal
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Güncelle
-            </Button>
-          </Box>
-        </form>
-      </Paper>
-    </Container>
+            <Box
+              sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
+            >
+              <Button onClick={() => navigate("/")} color="inherit">
+                İptal
+              </Button>
+              <Button type="submit" variant="contained" color="primary">
+                Güncelle
+              </Button>
+            </Box>
+          </form>
+        </Paper>
+      </Container>
+    </>
   );
 };
 
