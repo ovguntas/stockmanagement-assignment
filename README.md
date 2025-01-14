@@ -5,6 +5,7 @@ Modern ve kullanıcı dostu bir stok yönetim uygulaması. React, TypeScript, Ma
 ## Özellikler
 
 ### Ürün Yönetimi
+
 - Ürün ekleme, düzenleme ve silme
 - Ürün durumu yönetimi (Yayında/Taslak)
 - Ürün stok takibi
@@ -13,6 +14,7 @@ Modern ve kullanıcı dostu bir stok yönetim uygulaması. React, TypeScript, Ma
 - Ürün arama ve filtreleme
 
 ### Market Sayfası
+
 - Yayında olan ürünlerin listelenmesi
 - Ürün kartları ile görsel sunum
 - Sepete ürün ekleme/çıkarma
@@ -21,6 +23,7 @@ Modern ve kullanıcı dostu bir stok yönetim uygulaması. React, TypeScript, Ma
 - Toplam fiyat hesaplama
 
 ### Kullanıcı Arayüzü
+
 - Responsive tasarım
 - Koyu/Açık tema desteği
 - Mobil uyumlu sidebar
@@ -30,6 +33,7 @@ Modern ve kullanıcı dostu bir stok yönetim uygulaması. React, TypeScript, Ma
 ## Kurulum
 
 ### Backend
+
 ```bash
 cd backend
 npm install
@@ -37,15 +41,26 @@ npm start
 ```
 
 ### Frontend
+
 ```bash
 cd stock-management
 npm install
 npm run dev
 ```
 
+### Frontend Build Mode
+
+```bash
+cd stock-management
+npm install
+npm run build
+npm run preview
+```
+
 ## API Endpoints
 
 ### Ürün Yönetimi
+
 - `GET /products` - Tüm ürünleri listele
 - `POST /add-product` - Yeni ürün ekle
 - `PUT /products/:id` - Ürün güncelle
@@ -55,6 +70,7 @@ npm run dev
 ## Teknoloji Stack
 
 ### Frontend
+
 - React
 - TypeScript
 - Material-UI
@@ -64,12 +80,14 @@ npm run dev
 - Vite
 
 ### Backend
+
 - Node.js
 - Express
 - MongoDB
 - Mongoose
 
 ## Geliştirme Prensipleri
+
 - TypeScript ile tip güvenliği
 - Redux ile merkezi state yönetimi
 - Material-UI ile tutarlı tasarım
@@ -80,20 +98,25 @@ npm run dev
 ## Özellik Detayları
 
 ### Ürün İşlemleri
+
 - Ürün ekleme formu validasyonu
-- Zorunlu alanların belirtilmesi (*)
+- Zorunlu alanların belirtilmesi (\*)
 - Fiyat kontrolü (0'dan büyük olmalı)
+- Sayı inputlardaki mouse wheel ile input change kapatıldı 
+- Sayı inputlardaki ok tuşları kaldırıldı
 - Resim URL desteği
 - Birim ve kategori seçimi
 
 ### Market Özellikleri
+
 - Sadece yayında olan ürünlerin gösterimi
-- Sepet verilerinin kalıcı saklanması
+- Sepet verilerinin kalıcı saklanması (localstorage ile)
 - Ürün miktarı kontrolü
 - Anlık fiyat hesaplaması
 - Kolay miktar güncelleme
 
 ### Tema ve Görünüm
+
 - Sistem genelinde tutarlı tema
 - Koyu/Açık mod geçişi
 - Responsive layout
