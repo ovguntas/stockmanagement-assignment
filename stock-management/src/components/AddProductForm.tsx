@@ -14,8 +14,20 @@ import { PRODUCT_UNITS } from '../constants/units';
 
 const schema = z.object({
   name: z.string().min(1, "Ürün adı gereklidir"),
-  quantity: z.coerce.number().min(0, "Miktar 0 veya daha büyük olmalıdır"),
-  price: z.coerce.number().min(0.01, "Fiyat 0'dan büyük olmalıdır"),
+  quantity: z.union([
+    z.string(),
+    z.number()
+  ]).transform((val) => {
+    if (typeof val === 'string' && val === '') return 0;
+    return Number(val);
+  }).refine((val) => val >= 0, "Miktar 0 veya daha büyük olmalıdır"),
+  price: z.union([
+    z.string(),
+    z.number()
+  ]).transform((val) => {
+    if (typeof val === 'string' && val === '') return 0;
+    return Number(val);
+  }).refine((val) => val >= 0.01, "Fiyat 0'dan büyük olmalıdır"),
   unit: z.string().min(1, "Birim gereklidir"),
   tag: z.enum(["kırtasiye", "temizlik", "diğer"]),
   imageUrl: z
@@ -25,7 +37,14 @@ const schema = z.object({
     .or(z.literal("")),
 });
 
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  name: string;
+  quantity: string | number;
+  price: string | number;
+  unit: string;
+  tag: "kırtasiye" | "temizlik" | "diğer";
+  imageUrl?: string;
+};
 
 const AddProductForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,19 +53,25 @@ const AddProductForm: React.FC = () => {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
-      quantity: 0,
-      price: 0,
+      quantity: "",
+      price: "",
       unit: "",
       tag: "diğer",
       imageUrl: "",
     },
   });
 
-  const onSubmit = async (data: ProductInput) => {
+  const onSubmit = async (data: FormData) => {
     try {
+      const productInput: ProductInput = {
+        ...data,
+        quantity: Number(data.quantity) || 0,
+        price: Number(data.price) || 0,
+      };
+      
       await ApiRequest.addProduct({
         url: "/products",
-        body: data,
+        body: productInput,
       });
       await dispatch(fetchProducts({ page: 1, search: "" }));
       navigate("/");

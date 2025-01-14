@@ -25,7 +25,7 @@ const StockUpdate = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { showSuccess, showError } = useNotification();
   const [product, setProduct] = useState<Product | null>(null);
-  const [quantity, setQuantity] = useState<number>(0);
+  const [quantity, setQuantity] = useState<string>("");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -34,7 +34,7 @@ const StockUpdate = () => {
         const foundProduct = response.products.find((p) => p._id === id);
         if (foundProduct) {
           setProduct(foundProduct);
-          setQuantity(foundProduct.quantity);
+          setQuantity(foundProduct.quantity.toString());
         }
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -56,7 +56,7 @@ const StockUpdate = () => {
           id: product._id,
           product: {
             ...product,
-            quantity: Number(quantity),
+            quantity: quantity === "" ? 0 : Number(quantity),
           },
         })
       );
@@ -125,7 +125,7 @@ const StockUpdate = () => {
               label="Yeni Stok Miktarı"
               type="number"
               value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
+              onChange={(e) => setQuantity(e.target.value)}
               margin="normal"
               onWheel={(e) => e.target instanceof HTMLElement && e.target.blur()}
               sx={{
