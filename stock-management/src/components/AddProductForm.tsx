@@ -11,6 +11,7 @@ import { ProductInput } from "../types/product";
 import { AppDispatch } from "../redux/store";
 import { useNavigate } from "react-router-dom";
 import { PRODUCT_UNITS } from '../constants/units';
+import { useNotification } from "../hooks/useNotification";
 
 const schema = z.object({
   name: z.string().min(1, "Ürün adı gereklidir"),
@@ -49,6 +50,7 @@ type FormData = {
 const AddProductForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { showError } = useNotification();
   const { control, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -77,6 +79,11 @@ const AddProductForm: React.FC = () => {
       navigate("/");
     } catch (error) {
       console.error("Ürün eklenirken hata oluştu:", error);
+      if (error instanceof Error && error.message.includes('Network Error')) {
+        showError("Sunucuya bağlanılamadı.");
+      } else {
+        showError("Ürün eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+      }
     }
     reset();
   };

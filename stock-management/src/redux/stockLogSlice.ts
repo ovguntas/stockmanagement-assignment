@@ -26,8 +26,12 @@ const initialState: StockLogState = {
 export const fetchStockLogs = createAsyncThunk<StockLog[]>(
   'stockLogs/fetchStockLogs',
   async () => {
-    const response = await ApiRequest.getStockLogs();
-    return response;
+    try {
+      const response = await ApiRequest.getStockLogs();
+      return response;
+    } catch (error: any) {
+      throw new Error(error.message || "Stok logları yüklenirken bir hata oluştu");
+    }
   }
 );
 

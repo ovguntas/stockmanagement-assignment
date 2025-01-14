@@ -32,9 +32,9 @@ import {
   fetchProducts,
   setSearchTerm,
 } from "../redux/productSlice";
-import { ApiRequest } from "../api/ApiRequest";
 import useHoveredImage from "../hooks/useHoveredImage";
 import { useNotification } from "../hooks/useNotification";
+import { useApi } from "../hooks/useApi";
 import { Helmet } from "react-helmet-async";
 import ProductDetailModal from "./ProductDetailModal";
 
@@ -59,20 +59,28 @@ const ProductList: React.FC = () => {
     handleMouseLeave,
   } = useHoveredImage();
   const { showSuccess, showError } = useNotification();
+  const api = useApi();
 
   useEffect(() => {
+    const fetchData = async () => {
+      const result = await api.getAllProducts(page + 1, rowsPerPage, searchTerm);
+      if (result) {
+        dispatch({
+          type: 'products/fetchProducts/fulfilled',
+          payload: {
+            products: result.products,
+            total: result.total
+          }
+        });
+      }
+    };
+
     const timer = setTimeout(() => {
-      dispatch(
-        fetchProducts({
-          page: page + 1,
-          search: searchTerm,
-          limit: rowsPerPage,
-        })
-      );
+      fetchData();
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [dispatch, page, searchTerm, rowsPerPage]);
+  }, [dispatch, page, searchTerm, rowsPerPage, api]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(0);
@@ -95,7 +103,7 @@ const ProductList: React.FC = () => {
 
   const handleToggleStatus = async (product: Product) => {
     try {
-      const response = await ApiRequest.toggleProductStatus(product._id);
+      const response = await api.toggleProductStatus(product._id);
       dispatch(
         updateProductAsync({
           id: product._id,

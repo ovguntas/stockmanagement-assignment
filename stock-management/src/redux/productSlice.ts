@@ -5,11 +5,15 @@ import { ApiRequest } from "../api/ApiRequest";
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async ({ page = 1, search = '', limit = 10 }: { page?: number; search?: string; limit?: number }) => {
-    const response = await ApiRequest.getAllProducts(page, limit, search);
-    return {
-      products: response.products,
-      total: response.total
-    };
+    try {
+      const response = await ApiRequest.getAllProducts(page, limit, search);
+      return {
+        products: response.products,
+        total: response.total
+      };
+    } catch (error: any) {
+      throw new Error(error.message || "Ürünler yüklenirken bir hata oluştu");
+    }
   }
 );
 
@@ -17,15 +21,23 @@ export const updateProductAsync = createAsyncThunk<
   Product,
   { id: string; product: Partial<Product> }
 >("products/updateProduct", async ({ id, product }) => {
-  const response = await ApiRequest.updateProduct(id, product as ProductInput);
-  return response;
+  try {
+    const response = await ApiRequest.updateProduct(id, product as ProductInput);
+    return response;
+  } catch (error: any) {
+    throw new Error(error.message || "Ürün güncellenirken bir hata oluştu");
+  }
 });
 
 export const deleteProductAsync = createAsyncThunk<string, string>(
   "products/deleteProduct",
   async (id) => {
-    await ApiRequest.deleteProduct(id);
-    return id;
+    try {
+      await ApiRequest.deleteProduct(id);
+      return id;
+    } catch (error: any) {
+      throw new Error(error.message || "Ürün silinirken bir hata oluştu");
+    }
   }
 );
 

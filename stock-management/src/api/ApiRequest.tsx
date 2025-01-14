@@ -13,13 +13,20 @@ const responseBody = async (response: AxiosResponse) => {
   return response.data;
 };
 
+const handleError = (error: any) => {
+  if (error.code === "ERR_NETWORK") {
+    throw new Error("Sunucuya bağlanılamadı. Lütfen sunucunun çalıştığından emin olun.");
+  }
+  throw error;
+};
+
 const request = {
-  get: (url: string) => instance.get(url).then(responseBody),
+  get: (url: string) => instance.get(url).then(responseBody).catch(handleError),
   post: (url: string, body: object) =>
-    instance.post(url, body).then(responseBody),
+    instance.post(url, body).then(responseBody).catch(handleError),
   put: (url: string, body: object) =>
-    instance.put(url, body).then(responseBody),
-  delete: (url: string) => instance.delete(url).then(responseBody),
+    instance.put(url, body).then(responseBody).catch(handleError),
+  delete: (url: string) => instance.delete(url).then(responseBody).catch(handleError),
   postFormData: async (url: string, body: any) => {
     return instance
       .post(url, body, {
@@ -27,7 +34,8 @@ const request = {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then(responseBody);
+      .then(responseBody)
+      .catch(handleError);
   },
 };
 

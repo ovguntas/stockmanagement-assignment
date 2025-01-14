@@ -111,42 +111,6 @@ app.put("/products/:id/toggle-status", async (req, res) => {
   }
 });
 
-// Update product publish status
-app.put("/products/:id/publish-status", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Ürün bulunamadı" });
-    }
-
-    product.status = status;
-    await product.save();
-
-    res.json(product);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Update sold quantity
-app.put("/products/:id/sold", async (req, res) => {
-  try {
-    const { soldQuantity } = req.body;
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Ürün bulunamadı" });
-    }
-
-    product.soldQuantity = soldQuantity;
-    await product.save();
-
-    res.json(product);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
 app.delete("/products/:id", async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
