@@ -10,6 +10,7 @@ import { ApiRequest } from "../api/ApiRequest";
 import { ProductInput } from "../types/product";
 import { AppDispatch } from "../redux/store";
 import { useNavigate } from "react-router-dom";
+import { PRODUCT_UNITS } from '../constants/units';
 
 const schema = z.object({
   name: z.string().min(1, "Ürün adı gereklidir"),
@@ -131,14 +132,25 @@ const AddProductForm: React.FC = () => {
           <Controller
             name="unit"
             control={control}
-            render={({ field, fieldState: { error } }) => (
+            render={({
+              field: { onChange, value },
+              fieldState: { error },
+            }) => (
               <TextField
-                {...field}
-                label="Birim *"
+                select
+                label="Birim"
                 fullWidth
+                value={value}
+                onChange={onChange}
                 error={!!error}
                 helperText={error?.message}
-              />
+              >
+                {PRODUCT_UNITS.map((unit) => (
+                  <MenuItem key={unit.value} value={unit.value}>
+                    {unit.label}
+                  </MenuItem>
+                ))}
+              </TextField>
             )}
           />
         </Grid>

@@ -9,6 +9,7 @@ import {
   Button,
   Box,
   InputAdornment,
+  MenuItem,
 } from "@mui/material";
 import { AppDispatch } from "../redux/store";
 import { updateProductAsync } from "../redux/productSlice";
@@ -16,6 +17,7 @@ import { Product } from "../types/product";
 import { ApiRequest } from "../api/ApiRequest";
 import { useNotification } from "../hooks/useNotification";
 import { Helmet } from "react-helmet-async";
+import { PRODUCT_UNITS } from '../constants/units';
 
 const StockUpdate = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,6 +137,19 @@ const StockUpdate = () => {
                 },
               }}
             />
+            <TextField
+              select
+              label="Birim"
+              fullWidth
+              value={product.unit}
+              disabled
+            >
+              {PRODUCT_UNITS.map((unit) => (
+                <MenuItem key={unit.value} value={unit.value}>
+                  {unit.label}
+                </MenuItem>
+              ))}
+            </TextField>
             <Box
               sx={{
                 mt: 3,
