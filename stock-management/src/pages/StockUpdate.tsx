@@ -127,6 +127,16 @@ const StockUpdate = () => {
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
               margin="normal"
+              onWheel={(e) => e.target instanceof HTMLElement && e.target.blur()}
+              sx={{
+                '& input[type=number]': {
+                  MozAppearance: 'textfield',
+                  '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+                    WebkitAppearance: 'none',
+                    margin: 0,
+                  },
+                },
+              }}
               slotProps={{
                 input: {
                   endAdornment: (

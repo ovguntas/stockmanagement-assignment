@@ -97,6 +97,16 @@ const AddProductForm: React.FC = () => {
                 error={!!error}
                 helperText={error?.message}
                 onChange={(e) => field.onChange(Number(e.target.value))}
+                onWheel={(e) => e.target instanceof HTMLElement && e.target.blur()}
+                sx={{
+                  '& input[type=number]': {
+                    MozAppearance: 'textfield',
+                    '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
+                  },
+                }}
               />
             )}
           />
@@ -119,6 +129,16 @@ const AddProductForm: React.FC = () => {
                 error={!!error}
                 helperText={error?.message}
                 onChange={(e) => field.onChange(Number(e.target.value))}
+                onWheel={(e) => e.target instanceof HTMLElement && e.target.blur()}
+                sx={{
+                  '& input[type=number]': {
+                    MozAppearance: 'textfield',
+                    '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
+                  },
+                }}
               />
             )}
           />
