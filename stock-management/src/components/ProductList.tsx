@@ -62,25 +62,37 @@ const ProductList: React.FC = () => {
   const api = useApi();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchData = async () => {
-      const result = await api.getAllProducts(page + 1, rowsPerPage, searchTerm);
-      if (result) {
-        dispatch({
-          type: 'products/fetchProducts/fulfilled',
-          payload: {
-            products: result.products,
-            total: result.total
-          }
-        });
+      try {
+        const result = await api.getAllProducts(page + 1, rowsPerPage, searchTerm);
+        if (result) {
+          dispatch({
+            type: 'products/fetchProducts/fulfilled',
+            payload: {
+              products: result.products,
+              total: result.total
+            }
+          });
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+        console.error('Veri çekme hatası:', error);
       }
     };
 
     const timer = setTimeout(() => {
       fetchData();
-    }, 300);
+    }, 500);
 
-    return () => clearTimeout(timer);
-  }, [dispatch, page, searchTerm, rowsPerPage, api]);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [page, rowsPerPage, searchTerm]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(0);
@@ -238,7 +250,7 @@ const ProductList: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {products.map((product, index) => (
+                {products.map((product: Product, index: number) => (
                   <TableRow
                     key={product._id}
                     onClick={() => handleRowClick(product)}
